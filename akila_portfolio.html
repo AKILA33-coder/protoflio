@@ -2,8 +2,38 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<script>
+  (function(){
+    var t = localStorage.getItem('portfolio-theme');
+    if (t === 'light') document.documentElement.setAttribute('data-theme','light');
+  })();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Akila S — Full Stack Developer</title>
+<meta name="description" content="Akila S — Full Stack Developer. Portfolio featuring projects, certifications, internships, and skills in web development.">
+<meta name="keywords" content="Akila S, Full Stack Developer, Web Developer Portfolio, React, JavaScript, Python">
+<meta name="author" content="Akila S">
+<link rel="canonical" href="https://YOUR_PORTFOLIO_URL.com/">
+
+<!-- Open Graph / Facebook / LinkedIn / WhatsApp -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://YOUR_PORTFOLIO_URL.com/">
+<meta property="og:title" content="Akila S — Full Stack Developer">
+<meta property="og:description" content="Portfolio featuring projects, certifications, internships, and skills in web development.">
+<meta property="og:image" content="https://YOUR_PORTFOLIO_URL.com/preview.jpg">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Akila S — Full Stack Developer">
+<meta name="twitter:description" content="Portfolio featuring projects, certifications, internships, and skills in web development.">
+<meta name="twitter:image" content="https://YOUR_PORTFOLIO_URL.com/preview.jpg">
+<!--
+  SEO SETUP — replace the placeholders above:
+  1. YOUR_PORTFOLIO_URL.com → your real deployed URL (e.g. GitHub Pages / Netlify domain)
+  2. preview.jpg → a 1200x630px screenshot of your site, placed in the same folder,
+     so it shows a nice image when shared on LinkedIn/WhatsApp/Twitter
+-->
+
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -16,6 +46,16 @@
   --text:#f0f0fa;--muted:#6e6e8a;
   --card:rgba(255,255,255,0.03);--border:rgba(124,106,255,0.18);
 }
+[data-theme="light"]{
+  --bg:#f7f7fc;--bg2:#eeeef8;
+  --p:#5a48ff;--p2:#00997a;--p3:#d81b60;
+  --text:#161625;--muted:#5a5a72;
+  --card:rgba(0,0,0,0.03);--border:rgba(90,72,255,0.18);
+}
+[data-theme="light"] body::before{opacity:.4}
+[data-theme="light"] #modal-pdf{background:#fff}
+[data-theme="light"] .photo-badge{background:rgba(247,247,252,.92)}
+[data-theme="light"] #cert-modal>div{background:#fff}
 html{scroll-behavior:smooth;scroll-padding-top:70px}
 body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;overflow-x:hidden;cursor:none}
 
@@ -216,6 +256,23 @@ footer{padding:2rem 6%;border-top:1px solid var(--border);display:flex;justify-c
 .reveal{opacity:0;transform:translateY(28px);transition:opacity .75s ease,transform .75s ease}
 .reveal.on{opacity:1;transform:none}
 
+.hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:.4rem;z-index:250}
+.hamburger span{width:24px;height:2px;background:var(--text);border-radius:2px;transition:all .3s}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+.theme-toggle{
+  width:38px;height:38px;border-radius:50%;border:1px solid var(--border);
+  background:var(--card);color:var(--text);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .3s;flex-shrink:0;
+}
+.theme-toggle:hover{border-color:var(--p2);color:var(--p2)}
+.theme-toggle svg{width:18px;height:18px}
+.theme-toggle .sun{display:none}
+[data-theme="light"] .theme-toggle .sun{display:block}
+[data-theme="light"] .theme-toggle .moon{display:none}
+
 @media(max-width:900px){
   .hero-wrap{grid-template-columns:1fr;text-align:center}
   .hero-desc{margin:0 auto 2rem}
@@ -223,13 +280,38 @@ footer{padding:2rem 6%;border-top:1px solid var(--border);display:flex;justify-c
   .hero-numbers{justify-content:center}
   .photo-wrap{margin-top:1rem}
   .about-grid{grid-template-columns:1fr}
+  .stats-3{grid-template-columns:repeat(3,1fr)}
   .edu-grid{grid-template-columns:1fr}
-  nav .nav-links li:not(:last-child){display:none}
+  .cert-grid,.skills-grid{grid-template-columns:1fr 1fr}
+  .hamburger{display:flex}
+  nav .nav-links{
+    position:fixed;top:68px;left:0;right:0;
+    flex-direction:column;gap:0;
+    background:rgba(3,4,15,.97);backdrop-filter:blur(24px);
+    border-bottom:1px solid var(--border);
+    max-height:0;overflow:hidden;transition:max-height .35s ease;
+  }
+  nav .nav-links.open{max-height:400px}
+  nav .nav-links li{width:100%}
+  nav .nav-links li:not(:last-child){display:block}
+  nav .nav-links a{display:block;padding:1rem 6%;text-align:center}
+  nav .nav-links .nav-cta{margin:.5rem 6% 1rem;padding:.7rem 1.3rem}
 }
 @media(max-width:640px){
   .pc{grid-template-columns:1fr;gap:1rem}
   .pc-num,.pc-arrow{display:none}
   h2.sec-h{font-size:2rem}
+  .cert-grid,.skills-grid{grid-template-columns:1fr}
+  .stats-3{grid-template-columns:1fr}
+  .hero-numbers{gap:1.2rem}
+  .hn+.hn{padding-left:1.2rem}
+  #cur,#cur-o{display:none}
+  body{cursor:auto}
+  .cert-card,.btn,.nav-links a,.cl,.ft-r a{cursor:pointer}
+}
+@media(max-width:480px){
+  .photo-frame{width:220px;height:270px}
+  .photo-rings{width:340px;height:340px}
 }
 </style>
 </head>
@@ -242,13 +324,19 @@ footer{padding:2rem 6%;border-top:1px solid var(--border);display:flex;justify-c
 
 <nav>
   <div class="logo">Akila S.</div>
-  <ul class="nav-links">
+  <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <ul class="nav-links" id="navLinks">
     <li><a href="#about">About</a></li>
     <li><a href="#skills">Skills</a></li>
     <li><a href="#projects">Projects</a></li>
     <li><a href="#certs">Certs</a></li>
+    <li><a href="#internships">Internships</a></li>
     <li><a href="#contact" class="nav-cta">Hire Me →</a></li>
   </ul>
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode">
+    <svg class="moon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+  </button>
 </nav>
 
 <!-- HERO -->
@@ -265,6 +353,7 @@ footer{padding:2rem 6%;border-top:1px solid var(--border);display:flex;justify-c
         <div class="hero-btns">
           <a href="#projects" class="btn btn-p">View My Work →</a>
           <a href="mailto:akila642981@gmail.com" class="btn btn-g">Contact Me</a>
+          <a href="akila_resume.pdf" download="Akila_S_Resume.pdf" class="btn btn-g">⬇ Resume</a>
         </div>
         <div class="hero-numbers">
           <div class="hn"><div class="hn-val">8.02</div><div class="hn-lab">CGPA / 10</div></div>
@@ -439,7 +528,7 @@ footer{padding:2rem 6%;border-top:1px solid var(--border);display:flex;justify-c
     <div class="proj-grid">
 
       <!-- PROJECT 1: Replace href with your GitHub repo or live demo URL -->
-      <a class="pc reveal" href="https://github.com/YOUR_USERNAME/truehire-ai" target="_blank">
+      <a class="pc reveal" href="https://fraudulent-job-advertisment-3.onrender.com/" target="_blank">
         <div class="pc-num">01</div>
         <div>
           <div class="pc-badges"><span class="badge b-feat">⭐ Featured</span><span class="badge b-ml">ML Project</span><span class="badge b-type">Academic</span></div>
@@ -451,7 +540,7 @@ footer{padding:2rem 6%;border-top:1px solid var(--border);display:flex;justify-c
       </a>
 
       <!-- PROJECT 2: Replace href with your GitHub repo URL -->
-      <a class="pc reveal" href="https://github.com/YOUR_USERNAME/hall-allotment" target="_blank">
+      <a class="pc reveal" href="https://github.com/AKILA33-coder/STUDENT_EXAM_HALL_BOOKING" target="_blank">
         <div class="pc-num">02</div>
         <div>
           <div class="pc-badges"><span class="badge b-feat">Full Stack</span><span class="badge b-type">Academic</span></div>
@@ -463,7 +552,7 @@ footer{padding:2rem 6%;border-top:1px solid var(--border);display:flex;justify-c
       </a>
 
       <!-- PROJECT 3: Replace href with your GitHub repo URL -->
-      <a class="pc reveal" href="https://github.com/YOUR_USERNAME/hospital-management" target="_blank">
+      <a class="pc reveal" href="https://github.com/AKILA33-coder/Hospital-management-system" target="_blank">
         <div class="pc-num">03</div>
         <div>
           <div class="pc-badges"><span class="badge b-type">Academic</span><span class="badge b-type">Java + SQL</span></div>
@@ -475,7 +564,7 @@ footer{padding:2rem 6%;border-top:1px solid var(--border);display:flex;justify-c
       </a>
 
       <!-- PROJECT 4: Replace href with your GitHub repo or live demo URL -->
-      <a class="pc reveal" href="https://github.com/YOUR_USERNAME/meesho-clone" target="_blank">
+      <a class="pc reveal" href="https://akila33-coder.github.io/MEESHO-CLONE-MINI-PROJECT/" target="_blank">
         <div class="pc-num">04</div>
         <div>
           <div class="pc-badges"><span class="badge b-feat">⭐ E-Commerce</span><span class="badge b-type">Personal</span></div>
@@ -487,7 +576,7 @@ footer{padding:2rem 6%;border-top:1px solid var(--border);display:flex;justify-c
       </a>
 
       <!-- PROJECT 5: Replace href with your GitHub repo URL -->
-      <a class="pc reveal" href="https://github.com/YOUR_USERNAME/spam-detection" target="_blank">
+      <a class="pc reveal" href="https://spam-email-detetction.onrender.com/" target="_blank">
         <div class="pc-num">05</div>
         <div>
           <div class="pc-badges"><span class="badge b-feat">⭐ ML + NLP</span><span class="badge b-ml">Classifier</span><span class="badge b-type">Personal</span></div>
@@ -506,6 +595,18 @@ footer{padding:2rem 6%;border-top:1px solid var(--border);display:flex;justify-c
           <h3>Personal Portfolio Website</h3>
           <p class="pc-desc">Responsive portfolio with CSS animations, transitions, clean navigation and structured sections for projects, skills, and certifications. Deployed and showcased to recruiters.</p>
           <div class="pc-stack"><span class="stk">HTML5</span><span class="stk">CSS3</span><span class="stk">JavaScript</span><span class="stk">Animations</span></div>
+        </div>
+        <div class="pc-arrow">↗</div>
+      </a>
+
+      <!-- PROJECT 7: ECHO – Multimodal Emotional Intelligence Engine -->
+      <a class="pc reveal" href="https://multilingual-chatbox-n2cfhane7utbiggdhhsnux.streamlit.app/" target="_blank">
+        <div class="pc-num">07</div>
+        <div>
+          <div class="pc-badges"><span class="badge b-feat">⭐ AI Project</span><span class="badge b-ml">Multimodal</span><span class="badge b-type">Personal</span></div>
+          <h3>ECHO – Multimodal Emotional Intelligence Engine</h3>
+          <p class="pc-desc">AI-powered multimodal emotion recognition system analyzing text and voice to detect emotions. Integrated Transformer-based NLP and audio feature analysis for improved classification. Built interactive Streamlit chatbot with mood visualization and personalized recommendations.</p>
+          <div class="pc-stack"><span class="stk">Python</span><span class="stk">NLP</span><span class="stk">Transformers</span><span class="stk">Librosa</span><span class="stk">Streamlit</span><span class="stk">SQLite</span></div>
         </div>
         <div class="pc-arrow">↗</div>
       </a>
@@ -604,20 +705,16 @@ footer{padding:2rem 6%;border-top:1px solid var(--border);display:flex;justify-c
     <div class="reveal">
       <div class="sec-lab">Certifications</div>
       <h2 class="sec-h">Credentials & Courses</h2>
-      <p style="color:var(--muted);font-size:.86rem;margin-top:.3rem">Click any certificate card to view it · 4 earned · 6 slots to fill</p>
+      <p style="color:var(--muted);font-size:.86rem;margin-top:.3rem">Click any certificate card to view it · 10 earned</p>
+      <a href="https://drive.google.com/drive/folders/1HxEtB79U5BBkEr9u6uxv8i_O7LLcl-Ry?usp=sharing" target="_blank" rel="noopener noreferrer" class="btn btn-g" style="margin-top:1.2rem;display:inline-flex">
+        📁 View All Certificates on Drive
+      </a>
     </div>
     <div class="cert-grid">
-      <!--
-        HOW TO ADD YOUR CERTIFICATE IMAGE/PDF:
-        1. Put your certificate file (e.g. java_cert.jpg or java_cert.pdf) in the same folder as this HTML file
-        2. Set data-file="java_cert.jpg"  ← just the filename
-        3. Click the card → it opens in the viewer!
-        Supports: .jpg .png .pdf
-      -->
       <div class="cert-card reveal"
         data-name="Programming in Java"
         data-org="NPTEL · IIT Certified"
-        data-file=""><!-- e.g. data-file="nptel_java.jpg" -->
+        data-file="https://drive.google.com/file/d/1xKUuiEO2pZoTMQFXYvycEUNdaMJ5mGWb/view?usp=drive_link">
         <div class="cert-ico" style="background:linear-gradient(135deg,#f97316,#ef4444)">NP</div>
         <div><div class="cert-name">Programming in Java</div><div class="cert-org">NPTEL · IIT Certified</div></div>
       </div>
@@ -625,7 +722,7 @@ footer{padding:2rem 6%;border-top:1px solid var(--border);display:flex;justify-c
       <div class="cert-card reveal"
         data-name="Programming Fundamentals"
         data-org="Duke University · Coursera"
-        data-file=""><!-- e.g. data-file="duke_programming.pdf" -->
+        data-file="https://drive.google.com/file/d/1dpWuh3gjXbwHWYdXXPrOQxdW5_aZsGv_/view?usp=drive_link">
         <div class="cert-ico" style="background:linear-gradient(135deg,#0066c8,#004f9a)">DU</div>
         <div><div class="cert-name">Programming Fundamentals</div><div class="cert-org">Duke University · Coursera</div></div>
       </div>
@@ -633,7 +730,7 @@ footer{padding:2rem 6%;border-top:1px solid var(--border);display:flex;justify-c
       <div class="cert-card reveal"
         data-name="Linux Fundamentals"
         data-org="Red Hat"
-        data-file=""><!-- e.g. data-file="redhat_linux.jpg" -->
+        data-file="https://drive.google.com/file/d/1cS4LOGWoqV-LjVszEJipFSs0loohfVkz/view?usp=drive_link">
         <div class="cert-ico" style="background:linear-gradient(135deg,#cc0000,#880000)">RH</div>
         <div><div class="cert-name">Linux Fundamentals</div><div class="cert-org">Red Hat</div></div>
       </div>
@@ -646,55 +743,82 @@ footer{padding:2rem 6%;border-top:1px solid var(--border);display:flex;justify-c
         <div><div class="cert-name">Introduction to Cybersecurity</div><div class="cert-org">Cisco Networking Academy</div></div>
       </div>
 
-      <!-- SLOTS 5–10: Fill in name, org, ico text, color, and data-file -->
-      <div class="cert-card reveal" style="border-style:dashed;opacity:.6"
-        data-name="Certification Name"
-        data-org="Organization"
-        data-file="">
-        <div class="cert-ico" style="background:linear-gradient(135deg,#334,#1a1a2e)">✏</div>
-        <div><div class="cert-name">Certification Name Here</div><div class="cert-org">Issuing Organization</div><div class="cert-hint">← Edit slot 5 in HTML</div></div>
+      <div class="cert-card reveal"
+        data-name="Generative AI Foundations"
+        data-org="AWS Academy Graduate · Training Badge"
+        data-file="https://drive.google.com/file/d/11FBYw3J6_boh8Y2hM4YoieRacL1bHtML/view?usp=drive_link">
+        <div class="cert-ico" style="background:linear-gradient(135deg,#ff9900,#e88b00)">AWS</div>
+        <div><div class="cert-name">Generative AI Foundations</div><div class="cert-org">AWS Academy Graduate · Training Badge</div></div>
       </div>
 
-      <div class="cert-card reveal" style="border-style:dashed;opacity:.6"
-        data-name="Certification Name"
-        data-org="Organization"
-        data-file="">
-        <div class="cert-ico" style="background:linear-gradient(135deg,#334,#1a1a2e)">✏</div>
-        <div><div class="cert-name">Certification Name Here</div><div class="cert-org">Issuing Organization</div><div class="cert-hint">← Edit slot 6 in HTML</div></div>
+      <div class="cert-card reveal"
+        data-name="Applied AI — Conference Paper"
+        data-org="Foundational Course on Applied AI"
+        data-file="https://drive.google.com/file/d/1bG0afoZGZseOEUCEEo5kHvcCXvineYGs/view?usp=drive_link">
+        <div class="cert-ico" style="background:linear-gradient(135deg,#6d5dfc,#4636c9)">CP</div>
+        <div><div class="cert-name">Applied AI — Conference Paper</div><div class="cert-org">Foundational Course on Applied AI</div></div>
       </div>
 
-      <div class="cert-card reveal" style="border-style:dashed;opacity:.6"
-        data-name="Certification Name"
-        data-org="Organization"
-        data-file="">
-        <div class="cert-ico" style="background:linear-gradient(135deg,#334,#1a1a2e)">✏</div>
-        <div><div class="cert-name">Certification Name Here</div><div class="cert-org">Issuing Organization</div><div class="cert-hint">← Edit slot 7 in HTML</div></div>
+      <div class="cert-card reveal"
+        data-name="UI/UX Foundations"
+        data-org="Foundations of UI/UX Design"
+        data-file="https://drive.google.com/file/d/1ETsj5SvHAznj5w8Mi0v8eWS1RLETxFUh/view?usp=drive_link">
+        <div class="cert-ico" style="background:linear-gradient(135deg,#ff5f87,#c2185b)">UX</div>
+        <div><div class="cert-name">UI/UX Foundations</div><div class="cert-org">Foundations of UI/UX Design</div></div>
       </div>
 
-      <div class="cert-card reveal" style="border-style:dashed;opacity:.6"
-        data-name="Certification Name"
-        data-org="Organization"
-        data-file="">
-        <div class="cert-ico" style="background:linear-gradient(135deg,#334,#1a1a2e)">✏</div>
-        <div><div class="cert-name">Certification Name Here</div><div class="cert-org">Issuing Organization</div><div class="cert-hint">← Edit slot 8 in HTML</div></div>
+      <div class="cert-card reveal"
+        data-name="Machine Learning"
+        data-org="Machine Learning Course"
+        data-file="https://drive.google.com/file/d/1tMeFE-qAuYfan7pjErZr53IT8wFWI-Ya/view?usp=drive_link">
+        <div class="cert-ico" style="background:linear-gradient(135deg,#00b8d4,#0077a3)">ML</div>
+        <div><div class="cert-name">Machine Learning</div><div class="cert-org">Machine Learning Course</div></div>
       </div>
 
-      <div class="cert-card reveal" style="border-style:dashed;opacity:.6"
-        data-name="Certification Name"
-        data-org="Organization"
-        data-file="">
-        <div class="cert-ico" style="background:linear-gradient(135deg,#334,#1a1a2e)">✏</div>
-        <div><div class="cert-name">Certification Name Here</div><div class="cert-org">Issuing Organization</div><div class="cert-hint">← Edit slot 9 in HTML</div></div>
+      <div class="cert-card reveal"
+        data-name="Generative AI"
+        data-org="Gen AI Course"
+        data-file="https://drive.google.com/file/d/1oRP-de0kHxmzxiVuYeq80gV0t14NhZF0/view?usp=drive_link">
+        <div class="cert-ico" style="background:linear-gradient(135deg,#00e5b0,#00997a)">GA</div>
+        <div><div class="cert-name">Generative AI</div><div class="cert-org">Gen AI Course</div></div>
       </div>
 
-      <div class="cert-card reveal" style="border-style:dashed;opacity:.6"
-        data-name="Certification Name"
-        data-org="Organization"
-        data-file="">
-        <div class="cert-ico" style="background:linear-gradient(135deg,#334,#1a1a2e)">✏</div>
-        <div><div class="cert-name">Certification Name Here</div><div class="cert-org">Issuing Organization</div><div class="cert-hint">← Edit slot 10 in HTML</div></div>
+      <div class="cert-card reveal"
+        data-name="Prompt Engineering"
+        data-org="Prompt Engineering Course"
+        data-file="https://drive.google.com/file/d/1eRd0mktJX4WxviJHRqlqryzVFvp_GfqN/view?usp=drive_link">
+        <div class="cert-ico" style="background:linear-gradient(135deg,#9f8fff,#5a48ff)">PE</div>
+        <div><div class="cert-name">Prompt Engineering</div><div class="cert-org">Prompt Engineering Course</div></div>
       </div>
 
+    </div>
+  </div>
+</section>
+
+<!-- INTERNSHIPS -->
+<section id="internships">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="sec-lab">Internships</div>
+      <h2 class="sec-h">Work Experience</h2>
+      <p style="color:var(--muted);font-size:.86rem;margin-top:.3rem">Click any internship card to view the certificate · 2 completed</p>
+    </div>
+    <div class="cert-grid">
+      <div class="cert-card reveal"
+        data-name="Web Development Internship"
+        data-org="Internship Certificate"
+        data-file="https://drive.google.com/file/d/110IShR-DiDnxJHj0731gAzS4_SZQutt6/view?usp=drive_link">
+        <div class="cert-ico" style="background:linear-gradient(135deg,#00e5b0,#00997a)">WD</div>
+        <div><div class="cert-name">Web Development Internship</div><div class="cert-org">Internship Certificate</div></div>
+      </div>
+
+      <div class="cert-card reveal"
+        data-name="Deloitte Internship"
+        data-org="Deloitte"
+        data-file="https://drive.google.com/file/d/1plvCxQGJTdN7sQMdTtA9hC-c4DG1dwVu/view?usp=drive_link">
+        <div class="cert-ico" style="background:linear-gradient(135deg,#86bc25,#4a7729)">DL</div>
+        <div><div class="cert-name">Deloitte Internship</div><div class="cert-org">Deloitte</div></div>
+      </div>
     </div>
   </div>
 </section>
@@ -732,6 +856,30 @@ footer{padding:2rem 6%;border-top:1px solid var(--border);display:flex;justify-c
       <div class="sec-lab" style="justify-content:center">Get In Touch</div>
       <h2 class="sec-h">Let's Work Together</h2>
       <p>I'm actively seeking entry-level Full Stack Developer roles and internship opportunities. If you're looking for a motivated developer who can contribute across the full stack — let's connect!</p>
+
+      <!--
+        CONTACT FORM SETUP (free, no backend needed):
+        1. Go to https://formspree.io and sign up free
+        2. Create a new form, it gives you an endpoint like https://formspree.io/f/xxxxabcd
+        3. Replace YOUR_FORMSPREE_ID below with that code (the xxxxabcd part)
+        4. Formspree emails every submission straight to your inbox
+      -->
+      <form id="contactForm" action="https://formspree.io/f/YOUR_FORMSPREE_ID" method="POST" style="max-width:480px;margin:0 auto 3rem;text-align:left">
+        <div style="margin-bottom:1rem">
+          <input type="text" name="name" required placeholder="Your name"
+            style="width:100%;padding:.85rem 1rem;border-radius:10px;background:var(--card);border:1px solid var(--border);color:var(--text);font-family:'Outfit',sans-serif;font-size:.92rem">
+        </div>
+        <div style="margin-bottom:1rem">
+          <input type="email" name="email" required placeholder="Your email"
+            style="width:100%;padding:.85rem 1rem;border-radius:10px;background:var(--card);border:1px solid var(--border);color:var(--text);font-family:'Outfit',sans-serif;font-size:.92rem">
+        </div>
+        <div style="margin-bottom:1.2rem">
+          <textarea name="message" required placeholder="Your message" rows="4"
+            style="width:100%;padding:.85rem 1rem;border-radius:10px;background:var(--card);border:1px solid var(--border);color:var(--text);font-family:'Outfit',sans-serif;font-size:.92rem;resize:vertical"></textarea>
+        </div>
+        <button type="submit" class="btn btn-p" style="width:100%;justify-content:center;border:none">Send Message →</button>
+        <p id="formStatus" style="margin-top:.9rem;font-size:.85rem;color:var(--p2);display:none;text-align:center"></p>
+      </form>
       <div class="contact-grid">
         <a href="mailto:akila642981@gmail.com" class="cl">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 7L2 7"/></svg>
@@ -1033,7 +1181,80 @@ const barObs=new IntersectionObserver(entries=>{
 const barsEl=document.querySelector('.skill-bars');
 if(barsEl)barObs.observe(barsEl);
 
+// ── CONTACT FORM SUBMISSION ──
+const contactForm = document.getElementById('contactForm');
+if (contactForm) {
+  contactForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const status = document.getElementById('formStatus');
+    const btn = contactForm.querySelector('button[type="submit"]');
+    const originalText = btn.textContent;
+    btn.textContent = 'Sending...';
+    btn.disabled = true;
+    try {
+      const res = await fetch(contactForm.action, {
+        method: 'POST',
+        body: new FormData(contactForm),
+        headers: { 'Accept': 'application/json' }
+      });
+      if (res.ok) {
+        status.textContent = "Thanks! Your message has been sent — I'll get back to you soon.";
+        status.style.color = 'var(--p2)';
+        status.style.display = 'block';
+        contactForm.reset();
+      } else {
+        status.textContent = 'Something went wrong. Please email me directly instead.';
+        status.style.color = 'var(--p3)';
+        status.style.display = 'block';
+      }
+    } catch (err) {
+      status.textContent = 'Something went wrong. Please email me directly instead.';
+      status.style.color = 'var(--p3)';
+      status.style.display = 'block';
+    }
+    btn.textContent = originalText;
+    btn.disabled = false;
+  });
+}
+
+// ── DARK/LIGHT THEME TOGGLE ──
+const themeToggle = document.getElementById('themeToggle');
+const savedTheme = localStorage.getItem('portfolio-theme');
+if (savedTheme === 'light') document.documentElement.setAttribute('data-theme', 'light');
+if (themeToggle) {
+  themeToggle.addEventListener('click', () => {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    if (isLight) {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('portfolio-theme', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+      localStorage.setItem('portfolio-theme', 'light');
+    }
+  });
+}
+
+// ── MOBILE NAV TOGGLE ──
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.getElementById('navLinks');
+if (hamburger && navLinks) {
+  hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('open');
+    navLinks.classList.toggle('open');
+  });
+  navLinks.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      hamburger.classList.remove('open');
+      navLinks.classList.remove('open');
+    });
+  });
+}
+
 // ── CERTIFICATE MODAL ──
+function driveFileId(url) {
+  const m = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  return m ? m[1] : null;
+}
 function openCertModal(name, org, file) {
   const modal = document.getElementById('cert-modal');
   document.getElementById('modal-title').textContent = name;
@@ -1045,9 +1266,16 @@ function openCertModal(name, org, file) {
   img.style.display = 'none';
   pdf.style.display = 'none';
   empty.style.display = 'none';
+  const driveId = file ? driveFileId(file) : null;
   if (!file) {
     empty.style.display = 'flex';
     dl.style.display = 'none';
+  } else if (driveId) {
+    // Google Drive file — use embeddable preview iframe regardless of file type
+    pdf.src = `https://drive.google.com/file/d/${driveId}/preview`;
+    pdf.style.display = 'block';
+    dl.href = `https://drive.google.com/uc?export=download&id=${driveId}`;
+    dl.style.display = 'flex';
   } else if (file.toLowerCase().endsWith('.pdf')) {
     pdf.src = file;
     pdf.style.display = 'block';
